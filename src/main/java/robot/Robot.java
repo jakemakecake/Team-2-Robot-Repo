@@ -34,9 +34,9 @@ public class Robot extends CommandRobot implements Logged {
   private final PowerDistribution pdh = new PowerDistribution();
 
   // SUBSYSTEMS
-
+  robot.drive.Drive drive = new robot.drive.Drive();
   // COMMANDS
-
+  
   /** The robot contains subsystems, OI devices, and commands. */
   public Robot() {
     super(PERIOD.in(Seconds));
@@ -70,7 +70,11 @@ public class Robot extends CommandRobot implements Logged {
   }
 
   /** Configures trigger -> command bindings. */
-  private void configureBindings() {}
+  private void configureBindings() {
+    drive.setDefaultCommand(drive.drive(driver::getLeftY, driver::getRightY));
+}
+
+  
 
   /**
    * Command factory to make both controllers rumble.
@@ -97,4 +101,5 @@ public class Robot extends CommandRobot implements Logged {
   public void close() {
     super.close();
   }
+
 }
