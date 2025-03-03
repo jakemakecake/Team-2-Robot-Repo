@@ -40,12 +40,10 @@ public class Drive extends SubsystemBase {
   private final AnalogGyro gyro = new AnalogGyro(Ports.DriveConstants.GYRO_CHANNEL);
 
   private final DifferentialDriveOdometry odometry;
-  private DifferentialDrivetrainSim driveSim;
+  private final DifferentialDrivetrainSim driveSim;
   
-    
-    
-    
       public Drive() {
+      
         for (CANSparkMax spark : List.of(leftLeader, leftFollower, rightLeader, rightFollower)) {
           spark.restoreFactoryDefaults();
           spark.setIdleMode(IdleMode.kBrake);
@@ -64,13 +62,20 @@ public class Drive extends SubsystemBase {
                 0, 
                 0, 
                 new Pose2d());
-    
+
         leftLeader.setInverted(true);
-        
+
+        driveSim =
+        new DifferentialDrivetrainSim(
+            DCMotor.getMiniCIM(2),
+            DriveConstants.GEARING,
+            DriveConstants.MOI,
+            DriveConstants.DRIVE_MASS,
+            DriveConstants.WHEEL_RADIUS,
+            DriveConstants.TRACK_WIDTH,
+            DriveConstants.STD_DEVS);
       }
-    
-    
-    
+  
       private void drive(double leftSpeed, double rightSpeed) {
         leftLeader.set(leftSpeed);
         rightLeader.set(rightSpeed);
@@ -97,25 +102,7 @@ public class Drive extends SubsystemBase {
         leftLeader.setVoltage(leftVoltage);
         rightLeader.setVoltage(rightVoltage);
         driveSim.setInputs(leftVoltage, rightVoltage);
-  
-        
-    
-    
-    
-      driveSim =
-        new DifferentialDrivetrainSim(
-            DCMotor.getMiniCIM(2),
-            DriveConstants.GEARING,
-            DriveConstants.MOI,
-            DriveConstants.DRIVE_MASS,
-            DriveConstants.WHEEL_RADIUS,
-            DriveConstants.TRACK_WIDTH,
-            DriveConstants.STD_DEVS);
-    //...
-
   }
-
-  
 
   public Command drive(DoubleSupplier vLeft, DoubleSupplier vRight) {
     return run(() -> drive(vLeft.getAsDouble(), vRight.getAsDouble()));
@@ -140,7 +127,6 @@ public class Drive extends SubsystemBase {
     rightEncoder.setPosition(driveSim.getRightPositionMeters());
   }
   
-  
   public Pose2d pose() {
     return odometry.getPoseMeters();
   }
@@ -156,10 +142,3 @@ public class Drive extends SubsystemBase {
   private final Field2d field2d = new Field2d();
 
 }
-  
-
-
-
-
-
-
