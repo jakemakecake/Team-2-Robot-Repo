@@ -51,7 +51,7 @@ public class Robot extends CommandRobot implements Logged {
     DataLogManager.start();
     Monologue.setupMonologue(this, "/Robot", false, true);
     addPeriodic(Monologue::updateAll, PERIOD.in(Seconds));
-    addPeriodic(FaultLogger::update, 2);
+    addPeriodic(FaultLogger::update, 1);
 
     SmartDashboard.putData(CommandScheduler.getInstance());
     // Log PDH
@@ -99,5 +99,7 @@ public class Robot extends CommandRobot implements Logged {
   public void close() {
     super.close();
   }
+
+  
 
 }
