@@ -74,8 +74,6 @@ public class Robot extends CommandRobot implements Logged {
     drive.setDefaultCommand(drive.drive(driver::getLeftY, driver::getRightY));
 }
 
-  
-
   /**
    * Command factory to make both controllers rumble.
    *
