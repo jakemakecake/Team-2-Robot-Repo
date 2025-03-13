@@ -7,6 +7,7 @@ import edu.wpi.first.math.numbers.N7;
 
 public class DriveConstants {
 
+    // robot constants
     public static final double TRACK_WIDTH = 0.7112; // Meters
     public static final double WHEEL_RADIUS = 0.08; //Meters    
     public static final double CIRCUMFERENCE = 2.0 * Math.PI * WHEEL_RADIUS;
@@ -18,9 +19,9 @@ public class DriveConstants {
 
     
 
-    //dist
+    // dist
     public static final double POSITION_FACTOR = CIRCUMFERENCE * GEARING;
-    //*meters/s*
+    // meters/s
     public static final double VELOCITY_FACTOR = POSITION_FACTOR / 60.0;
 
     
