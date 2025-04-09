@@ -3,12 +3,10 @@ package robot.drive;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import static edu.wpi.first.units.Units.Seconds;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,6 +17,7 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import monologue.Annotations.Log;
 import robot.Constants;
@@ -28,7 +27,7 @@ import robot.drive.DriveConstants.FF;
 import robot.drive.DriveConstants.PID;
 
 
-public class Drive extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase {
   private final CANSparkMax leftLeader = new CANSparkMax(Ports.DriveConstants.LEFT_LEADER, MotorType.kBrushless);
   private final CANSparkMax leftFollower = new CANSparkMax(Ports.DriveConstants.LEFT_FOLLOWER, MotorType.kBrushless);
   private final CANSparkMax rightLeader = new CANSparkMax(Ports.DriveConstants.RIGHT_LEADER, MotorType.kBrushless);
@@ -42,7 +41,7 @@ public class Drive extends SubsystemBase {
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDrivetrainSim driveSim;
   
-      public Drive() {
+      public DriveSubsystem() {
       
         for (CANSparkMax spark : List.of(leftLeader, leftFollower, rightLeader, rightFollower)) {
           spark.restoreFactoryDefaults();
@@ -76,7 +75,7 @@ public class Drive extends SubsystemBase {
             DriveConstants.STD_DEVS);
       }
   
-      private void drive(double leftSpeed, double rightSpeed) {
+      public void drive(double leftSpeed, double rightSpeed) {
         leftLeader.set(leftSpeed);
         rightLeader.set(rightSpeed);
         leftEncoder.setPositionConversionFactor(DriveConstants.POSITION_FACTOR);
@@ -141,4 +140,15 @@ public class Drive extends SubsystemBase {
   @Log.NT 
   private final Field2d field2d = new Field2d();
 
+  //COMMANDS
+  public Command getSpeed() {
+    return Commands.none();
+  }
+
+  public Command testCommand() {
+    return Commands.print("this is a test.");
+  }
+
+
+  
 }
