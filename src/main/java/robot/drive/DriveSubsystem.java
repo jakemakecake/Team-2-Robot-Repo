@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,12 +16,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import monologue.Annotations.Log;
 import robot.Constants;
 import robot.Ports;
 import robot.Robot;
@@ -32,11 +35,15 @@ public class DriveSubsystem extends SubsystemBase {
   private final CANSparkMax leftFollower = new CANSparkMax(Ports.DriveConstants.LEFT_FOLLOWER, MotorType.kBrushless);
   private final CANSparkMax rightLeader = new CANSparkMax(Ports.DriveConstants.RIGHT_LEADER, MotorType.kBrushless);
   private final CANSparkMax rightFollower = new CANSparkMax(Ports.DriveConstants.RIGHT_FOLLOWER, MotorType.kBrushless);
-
+  
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
 
+  private final Field2d field2d = new Field2d();
+
   private final AnalogGyro gyro = new AnalogGyro(Ports.DriveConstants.GYRO_CHANNEL);
+
+  private AnalogGyroSim gyroSim = new AnalogGyroSim(gyro);
 
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDrivetrainSim driveSim;
@@ -117,13 +124,16 @@ public class DriveSubsystem extends SubsystemBase {
     updateOdometry(Robot.isReal() ? gyro.getRotation2d() :  
                         driveSim.getHeading());
     field2d.setRobotPose(pose());
+    SmartDashboard.putData("field", field2d);
     }
+
   @Override
   public void simulationPeriodic() {
     // sim.update() tells the simulation how much time has passed
     driveSim.update(Constants.PERIOD.in(Seconds));
     leftEncoder.setPosition(driveSim.getLeftPositionMeters());
     rightEncoder.setPosition(driveSim.getRightPositionMeters());
+
   }
   
   public Pose2d pose() {
@@ -137,18 +147,37 @@ public class DriveSubsystem extends SubsystemBase {
   private final PIDController rightPIDController =
       new PIDController(PID.kP, PID.kI, PID.kD);
   
-  @Log.NT 
-  private final Field2d field2d = new Field2d();
-
   //COMMANDS
-  public Command getSpeed() {
-    return Commands.none();
+  public Command getLeftPos() {
+    return run(() -> leftEncoder.getPosition());
   }
 
-  public Command testCommand() {
+  public Command getRightPos() {
+    return run(() -> leftEncoder.getPosition());
+  }
+
+  public Command test() {
     return Commands.print("this is a test.");
   }
-
-
   
+  public Command setVolatge(double volts) {
+    return run(() -> leftLeader.setVoltage(volts));
+  }
+  
+  // 2d sim
+
+  DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
+  DCMotor.getNEO(2),       // 2 NEO motors on each side of the drivetrain.
+  DriveConstants.GEARING,                    // 7.29:1 gearing reduction.
+  DriveConstants.MOI,                     // MOI of 7.5 kg m^2 (from CAD model).
+  DriveConstants.DRIVE_MASS,                    // The mass of the robot is 60 kg.
+  DriveConstants.WHEEL_RADIUS, // The robot uses 3" radius wheels.
+  DriveConstants.TRACK_WIDTH,                  // The track width is 0.7112 meters.
+  // The standard deviations for measurement noise:
+  // x and y:          0.001 m
+  // heading:          0.001 rad
+  // l and r velocity: 0.1   m/s
+  // l and r position: 0.005 m
+  VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+
 }

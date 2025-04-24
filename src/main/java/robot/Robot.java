@@ -13,14 +13,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.autonomous;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import lib.CommandRobot;
 import lib.FaultLogger;
 import monologue.Logged;
@@ -42,9 +41,6 @@ public class Robot extends CommandRobot implements Logged {
   robot.drive.DriveSubsystem drive = new robot.drive.DriveSubsystem();
 
   //COMMANDS
-  
-
-
   
 
   /** The robot contains subsystems, OI devices, and commands. */
@@ -83,6 +79,8 @@ public class Robot extends CommandRobot implements Logged {
   /** Configures trigger -> command bindings. */
   private void configureBindings() {
     drive.setDefaultCommand(drive.drive(driver::getLeftY, driver::getRightY));
+    autonomous().whileTrue(drive.drive(null, null));
+
 }
 
   /**
@@ -111,14 +109,5 @@ public class Robot extends CommandRobot implements Logged {
     super.close();
   }
 
-  double elapsedCycles = 0;
-  @Override 
-  public void teleopPeriodic() {
-    System.out.println("time spent in tele: " + (elapsedCycles + 0.02));
-    elapsedCycles += 0.02;
-
-  }
-
-  
 
 }
