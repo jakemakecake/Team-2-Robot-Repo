@@ -7,7 +7,12 @@
 
 package robot;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.autonomous;
 import static robot.Constants.PERIOD;
+
+import org.littletonrobotics.urcl.URCL;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -18,13 +23,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.autonomous;
 import edu.wpi.first.wpilibj2.command.Commands;
-
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import lib.CommandRobot;
 import lib.FaultLogger;
 import monologue.Logged;
 import monologue.Monologue;
-import org.littletonrobotics.urcl.URCL;
 import robot.Ports.OI;
 //---------------------------------------
 
@@ -49,6 +52,7 @@ public class Robot extends CommandRobot implements Logged {
     configureGameBehavior();
     configureBindings();
   }
+//Auto
 
   /** Configures basic behavior for different periods during the game. */
   private void configureGameBehavior() {
@@ -75,12 +79,16 @@ public class Robot extends CommandRobot implements Logged {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
   }
-
+@Override
+public void autonomousInit() {
+  super.autonomousInit();
+  Commands.waitSeconds(15);
+autonomousExit();
+}
   /** Configures trigger -> command bindings. */
   private void configureBindings() {
     drive.setDefaultCommand(drive.drive(driver::getLeftY, driver::getRightY));
-    autonomous().whileTrue(drive.drive(null, null));
-
+    autonomous().whileTrue(drive.drive(() -> 2, () -> 2));
 }
 
   /**
