@@ -1,5 +1,5 @@
 package robot.subsystems.intake;
 
-public class IntakeIO {
-    
+public interface IntakeIO {
+    void setVoltage(double volts);
 }

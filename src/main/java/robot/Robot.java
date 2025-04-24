@@ -18,7 +18,9 @@ import lib.FaultLogger;
 import monologue.Logged;
 import monologue.Monologue;
 import org.littletonrobotics.urcl.URCL;
+
 import robot.Ports.OI;
+import robot.subsystems.intake.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -34,6 +36,7 @@ public class Robot extends CommandRobot implements Logged {
   private final PowerDistribution pdh = new PowerDistribution();
 
   // SUBSYSTEMS
+  Intake intake = new Intake();
 
   // COMMANDS
 
@@ -70,7 +73,9 @@ public class Robot extends CommandRobot implements Logged {
   }
 
   /** Configures trigger -> command bindings. */
-  private void configureBindings() {}
+  private void configureBindings() {
+    operator.a().onTrue(intake.stop());
+  }
 
   /**
    * Command factory to make both controllers rumble.
