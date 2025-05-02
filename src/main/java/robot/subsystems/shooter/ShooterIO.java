@@ -3,16 +3,18 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMax.IdleMode;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * ShooterIO controls the shooter and intake motors.
+ * ShooterIO controls the shooter and intake motors for intake and outtake functionality.
  */
 public class ShooterIO extends SubsystemBase {
 
     private final CANSparkMax shooterMotor;
     private final CANSparkMax intakeMotor;
 
-    // Default speeds
+    // Current speed settings
     private double shooterSpeed = 0.0;
     private double intakeSpeed = 0.0;
 
@@ -28,6 +30,9 @@ public class ShooterIO extends SubsystemBase {
 
         shooterMotor.restoreFactoryDefaults();
         intakeMotor.restoreFactoryDefaults();
+
+        shooterMotor.setIdleMode(IdleMode.kBrake);
+        intakeMotor.setIdleMode(IdleMode.kBrake);
     }
 
     /**
@@ -36,8 +41,8 @@ public class ShooterIO extends SubsystemBase {
      * @param speed Value between -1.0 and 1.0
      */
     public void setShooterSpeed(double speed) {
-        shooterSpeed = speed;
-        shooterMotor.set(speed);
+        shooterSpeed = clampSpeed(speed);
+        shooterMotor.set(shooterSpeed);
     }
 
     /**
@@ -46,8 +51,8 @@ public class ShooterIO extends SubsystemBase {
      * @param speed Value between -1.0 and 1.0
      */
     public void setIntakeSpeed(double speed) {
-        intakeSpeed = speed;
-        intakeMotor.set(speed);
+        intakeSpeed = clampSpeed(speed);
+        intakeMotor.set(intakeSpeed);
     }
 
     /**
@@ -71,8 +76,18 @@ public class ShooterIO extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-        // You can add logging or diagnostics here
-        System.out.println("Shooter Speed: " + shooterSpeed + ", Intake Speed: " + intakeSpeed);
+        // Outputs for diagnostics
+        SmartDashboard.putNumber("Shooter Speed", shooterSpeed);
+        SmartDashboard.putNumber("Intake Speed", intakeSpeed);
+    }
+
+    /**
+     * Clamp the motor speed to the safe range.
+     *
+     * @param speed Requested speed
+     * @return Clamped speed between -1.0 and 1.0
+     */
+    private double clampSpeed(double speed) {
+        return Math.max(-1.0, Math.min(1.0, speed));
     }
 }
