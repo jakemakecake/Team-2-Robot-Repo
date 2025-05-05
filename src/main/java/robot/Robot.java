@@ -82,14 +82,10 @@ public class Robot extends CommandRobot implements Logged {
 @Override
 public void autonomousInit() {
   super.autonomousInit();
-  autonomous().whileTrue(drive.drive(() -> 1, () -> 1));
+  autonomous().whileTrue(drive.drive(() -> 1, () -> 1).until(() -> drive.pose().equals(goalPose)));
   Pose2d currentPose = drive.pose();
   Pose2d goalPose = drive.pose().plus(new Transform2d(23, 24, new Rotation2d(0)));
-  if (currentPose== goalPose){
-
-  }
   System.out.println(currentPose);
-  Commands.waitSeconds(3);
 autonomousExit();
 }
   /** Configures trigger -> command bindings. */
