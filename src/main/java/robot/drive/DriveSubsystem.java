@@ -148,24 +148,6 @@ public class DriveSubsystem extends SubsystemBase {
       new PIDController(PID.kP, PID.kI, PID.kD);
   private final PIDController rightPIDController =
       new PIDController(PID.kP, PID.kI, PID.kD);
-  
-  // // 2d sim
-  // DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
-  // // 2 = 2 NEO motors on each side of the drivetrain.
-  // // other measurements found in DriveConstants
-  // DCMotor.getNEO(2),       
-  // DriveConstants.GEARING,                    
-  // DriveConstants.MOI,                     
-  // DriveConstants.DRIVE_MASS,                    
-  // DriveConstants.WHEEL_RADIUS,        
-  // DriveConstants.TRACK_WIDTH,                  
-  // // The standard deviations for measurement noise:
-  // // x and y:          0.001 m
-  // // heading:          0.001 rad
-  // // l and r velocity: 0.1   m/s
-  // // l and r position: 0.005 m
-  // VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
-
 
   //TEST COMMANDS
   public Command getLeftPos() {
