@@ -37,5 +37,5 @@ public class DriveConstants {
       }
 
     // meters/s
-    public static final double MAX_SPEED = .1; 
+    public static final double MAX_SPEED = .5; 
 }

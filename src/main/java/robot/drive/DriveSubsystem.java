@@ -101,6 +101,7 @@ public class DriveSubsystem extends SubsystemBase {
     rightLeader.setVoltage(rightVoltage);
     
     driveSim.setInputs(leftVoltage, rightVoltage);
+
     driveSim.update(Constants.PERIOD.in(Seconds));
 
   }
@@ -116,7 +117,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override 
   public void periodic() {
 
-    updateOdometry(gyro.getRotation2d());
+    // updateOdometry(gyro.getRotation2d());
     updateOdometry(Robot.isReal() ? gyro.getRotation2d() :  
                         driveSim.getHeading());
     leftEncoder.getPosition();
