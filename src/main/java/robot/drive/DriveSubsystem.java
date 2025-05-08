@@ -31,6 +31,7 @@ import robot.drive.DriveConstants.PID;
 
 
 public class DriveSubsystem extends SubsystemBase {
+
   private final CANSparkMax leftLeader = new CANSparkMax(Ports.DriveConstants.LEFT_LEADER, MotorType.kBrushless);
   private final CANSparkMax leftFollower = new CANSparkMax(Ports.DriveConstants.LEFT_FOLLOWER, MotorType.kBrushless);
   private final CANSparkMax rightLeader = new CANSparkMax(Ports.DriveConstants.RIGHT_LEADER, MotorType.kBrushless);
@@ -48,66 +49,63 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDrivetrainSim driveSim;
   
-      public DriveSubsystem() {
-      
-        for (CANSparkMax spark : List.of(leftLeader, leftFollower, rightLeader, rightFollower)) {
-          spark.restoreFactoryDefaults();
-          spark.setIdleMode(IdleMode.kBrake);
-    
-        }
-        rightFollower.follow(rightLeader);
-        leftFollower.follow(leftLeader);
-        leftEncoder.setPosition(0);
-        rightEncoder.setPosition(0);
-    
-        gyro.reset();
-        
-    
-        odometry = new DifferentialDriveOdometry(
-                new Rotation2d(), 
-                0, 
-                0, 
-                new Pose2d());
-
-        leftLeader.setInverted(true);
-
-        driveSim =
-        new DifferentialDrivetrainSim(
-            DCMotor.getMiniCIM(2),
-            DriveConstants.GEARING,
-            DriveConstants.MOI,
-            DriveConstants.DRIVE_MASS,
-            DriveConstants.WHEEL_RADIUS,
-            DriveConstants.TRACK_WIDTH,
-            DriveConstants.STD_DEVS);
-      }
+  public DriveSubsystem() {
   
-      public void drive(double leftSpeed, double rightSpeed) {
-        leftLeader.set(leftSpeed);
-        rightLeader.set(rightSpeed);
-        leftEncoder.setPositionConversionFactor(DriveConstants.POSITION_FACTOR);
-        rightEncoder.setPositionConversionFactor(DriveConstants.POSITION_FACTOR);
+    for (CANSparkMax spark : List.of(leftLeader, leftFollower, rightLeader, rightFollower)) {
+      spark.restoreFactoryDefaults();
+      spark.setIdleMode(IdleMode.kBrake);
+    }
+
+    leftLeader.setInverted(true);
+    rightFollower.follow(rightLeader);
+    leftFollower.follow(leftLeader);
+    leftEncoder.setPosition(0);
+    rightEncoder.setPosition(0);
+    gyro.reset();
     
-        leftEncoder.setVelocityConversionFactor(DriveConstants.VELOCITY_FACTOR);
-        rightEncoder.setVelocityConversionFactor(DriveConstants.VELOCITY_FACTOR);
     
-        final double realLeftSpeed = leftSpeed * DriveConstants.MAX_SPEED;
-        final double realRightSpeed = rightSpeed * DriveConstants.MAX_SPEED;
-      
-        final double leftFeedforward = feedforward.calculate(realLeftSpeed);
-        final double rightFeedforward = feedforward.calculate(realRightSpeed);
-    
-        final double leftPID = 
-          leftPIDController.calculate(leftEncoder.getVelocity(), realLeftSpeed);
-        final double rightPID = 
-          rightPIDController.calculate(rightEncoder.getVelocity(), realRightSpeed);
-    
-        double leftVoltage = leftPID + leftFeedforward;
-        double rightVoltage = rightPID + rightFeedforward;
-    
-        leftLeader.setVoltage(leftVoltage);
-        rightLeader.setVoltage(rightVoltage);
-        driveSim.setInputs(leftVoltage, rightVoltage);
+    odometry = new DifferentialDriveOdometry(
+            new Rotation2d(), 
+            0, 
+            0, 
+            new Pose2d());
+
+    driveSim =
+    new DifferentialDrivetrainSim(
+        DCMotor.getMiniCIM(2),
+        DriveConstants.GEARING,
+        DriveConstants.MOI,
+        DriveConstants.DRIVE_MASS,
+        DriveConstants.WHEEL_RADIUS,
+        DriveConstants.TRACK_WIDTH,
+        DriveConstants.STD_DEVS);
+  }
+
+  public void drive(double leftSpeed, double rightSpeed) {
+    leftEncoder.setPositionConversionFactor(DriveConstants.POSITION_FACTOR);
+    rightEncoder.setPositionConversionFactor(DriveConstants.POSITION_FACTOR);
+
+    leftEncoder.setVelocityConversionFactor(DriveConstants.VELOCITY_FACTOR);
+    rightEncoder.setVelocityConversionFactor(DriveConstants.VELOCITY_FACTOR);
+
+    final double realLeftSpeed = leftSpeed * DriveConstants.MAX_SPEED;
+    final double realRightSpeed = rightSpeed * DriveConstants.MAX_SPEED;
+  
+    final double leftFeedforward = feedforward.calculate(realLeftSpeed);
+    final double rightFeedforward = feedforward.calculate(realRightSpeed);
+
+    final double leftPID = 
+      leftPIDController.calculate(leftEncoder.getVelocity(), realLeftSpeed);
+    final double rightPID = 
+      rightPIDController.calculate(rightEncoder.getVelocity(), realRightSpeed);
+
+    double leftVoltage = leftPID + leftFeedforward;
+    double rightVoltage = rightPID + rightFeedforward;
+
+    leftLeader.setVoltage(leftVoltage);
+    rightLeader.setVoltage(rightVoltage);
+    driveSim.setInputs(leftVoltage, rightVoltage);
+    driveSim.update(Constants.PERIOD.in(Seconds));
   }
 
   public Command drive(DoubleSupplier vLeft, DoubleSupplier vRight) {
@@ -120,11 +118,15 @@ public class DriveSubsystem extends SubsystemBase {
   
   @Override 
   public void periodic() {
+
     updateOdometry(gyro.getRotation2d());
     updateOdometry(Robot.isReal() ? gyro.getRotation2d() :  
                         driveSim.getHeading());
+    leftEncoder.getPosition();
+    rightEncoder.getPosition();
     field2d.setRobotPose(pose());
     SmartDashboard.putData("field", field2d);
+
     }
 
   @Override
@@ -133,7 +135,7 @@ public class DriveSubsystem extends SubsystemBase {
     driveSim.update(Constants.PERIOD.in(Seconds));
     leftEncoder.setPosition(driveSim.getLeftPositionMeters());
     rightEncoder.setPosition(driveSim.getRightPositionMeters());
-
+    
   }
   
   public Pose2d pose() {
@@ -147,7 +149,25 @@ public class DriveSubsystem extends SubsystemBase {
   private final PIDController rightPIDController =
       new PIDController(PID.kP, PID.kI, PID.kD);
   
-  //COMMANDS
+  // // 2d sim
+  // DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
+  // // 2 = 2 NEO motors on each side of the drivetrain.
+  // // other measurements found in DriveConstants
+  // DCMotor.getNEO(2),       
+  // DriveConstants.GEARING,                    
+  // DriveConstants.MOI,                     
+  // DriveConstants.DRIVE_MASS,                    
+  // DriveConstants.WHEEL_RADIUS,        
+  // DriveConstants.TRACK_WIDTH,                  
+  // // The standard deviations for measurement noise:
+  // // x and y:          0.001 m
+  // // heading:          0.001 rad
+  // // l and r velocity: 0.1   m/s
+  // // l and r position: 0.005 m
+  // VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+
+
+  //TEST COMMANDS
   public Command getLeftPos() {
     return run(() -> leftEncoder.getPosition());
   }
@@ -160,24 +180,7 @@ public class DriveSubsystem extends SubsystemBase {
     return Commands.print("this is a test.");
   }
   
-  public Command setVolatge(double volts) {
+  public Command setVoltagege(double volts) {
     return run(() -> leftLeader.setVoltage(volts));
   }
-  
-  // 2d sim
-
-  DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
-  DCMotor.getNEO(2),       // 2 NEO motors on each side of the drivetrain.
-  DriveConstants.GEARING,                    // 7.29:1 gearing reduction.
-  DriveConstants.MOI,                     // MOI of 7.5 kg m^2 (from CAD model).
-  DriveConstants.DRIVE_MASS,                    // The mass of the robot is 60 kg.
-  DriveConstants.WHEEL_RADIUS, // The robot uses 3" radius wheels.
-  DriveConstants.TRACK_WIDTH,                  // The track width is 0.7112 meters.
-  // The standard deviations for measurement noise:
-  // x and y:          0.001 m
-  // heading:          0.001 rad
-  // l and r velocity: 0.1   m/s
-  // l and r position: 0.005 m
-  VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
-
 }

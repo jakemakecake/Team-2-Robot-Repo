@@ -82,8 +82,8 @@ public class Robot extends CommandRobot implements Logged {
 @Override
 public void autonomousInit() {
   super.autonomousInit();
-  Commands.waitSeconds(15);
-autonomousExit();
+  Commands.waitSeconds(3);
+  autonomousExit();
 }
   /** Configures trigger -> command bindings. */
   private void configureBindings() {
