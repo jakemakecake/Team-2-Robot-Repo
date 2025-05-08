@@ -7,8 +7,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,7 +14,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,8 +40,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field2d = new Field2d();
 
   private final AnalogGyro gyro = new AnalogGyro(Ports.DriveConstants.GYRO_CHANNEL);
-
-  private AnalogGyroSim gyroSim = new AnalogGyroSim(gyro);
 
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDrivetrainSim driveSim;
@@ -104,8 +99,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftLeader.setVoltage(leftVoltage);
     rightLeader.setVoltage(rightVoltage);
+    
     driveSim.setInputs(leftVoltage, rightVoltage);
     driveSim.update(Constants.PERIOD.in(Seconds));
+
   }
 
   public Command drive(DoubleSupplier vLeft, DoubleSupplier vRight) {
@@ -138,6 +135,7 @@ public class DriveSubsystem extends SubsystemBase {
     
   }
   
+
   public Pose2d pose() {
     return odometry.getPoseMeters();
   }

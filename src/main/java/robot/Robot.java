@@ -108,6 +108,5 @@ public class Robot extends CommandRobot implements Logged {
   public void close() {
     super.close();
   }
-
-
+  
 }
