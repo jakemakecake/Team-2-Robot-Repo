@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import monologue.Logged;
+import monologue.Annotations.Log;
 import robot.Constants;
 import robot.Ports;
 import robot.Robot;
@@ -27,7 +29,7 @@ import robot.drive.DriveConstants.FF;
 import robot.drive.DriveConstants.PID;
 
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase implements Logged{
 
   private final CANSparkMax leftLeader = new CANSparkMax(Ports.DriveConstants.LEFT_LEADER, MotorType.kBrushless);
   private final CANSparkMax leftFollower = new CANSparkMax(Ports.DriveConstants.LEFT_FOLLOWER, MotorType.kBrushless);
@@ -136,7 +138,7 @@ public class DriveSubsystem extends SubsystemBase {
     
   }
   
-
+  @Log
   public Pose2d pose() {
     return odometry.getPoseMeters();
   }
@@ -164,4 +166,7 @@ public class DriveSubsystem extends SubsystemBase {
   public Command setVoltagege(double volts) {
     return run(() -> leftLeader.setVoltage(volts));
   }
+
+
+
 }

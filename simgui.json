@@ -22,6 +22,14 @@
   "NetworkTables": {
     "Persistent Values": {
       "open": false
+    },
+    "transitory": {
+      "Robot": {
+        "drive": {
+          "open": true
+        },
+        "open": true
+      }
     }
   },
   "NetworkTables Info": {

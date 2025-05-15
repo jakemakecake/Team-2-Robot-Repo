@@ -1,8 +1,8 @@
-package frc.robot.subsystems;
+package robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.MotorType;
 
 /**
  * ShooterIO controls the shooter and intake motors.
