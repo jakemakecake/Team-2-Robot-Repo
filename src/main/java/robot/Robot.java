@@ -1,8 +1,16 @@
-package robot;
+/**
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and trigger mappings) should be declared here.
+ */
 
+package robot;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.autonomous;
 import static robot.Constants.PERIOD;
 
+import org.littletonrobotics.urcl.URCL;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -17,25 +25,23 @@ import lib.CommandRobot;
 import lib.FaultLogger;
 import monologue.Logged;
 import monologue.Monologue;
-import org.littletonrobotics.urcl.URCL;
 import robot.Ports.OI;
+//---------------------------------------
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
+
 public class Robot extends CommandRobot implements Logged {
-  // INPUT DEVICES
+  
+  //inputs
   private final CommandXboxController operator = new CommandXboxController(OI.OPERATOR);
   private final CommandXboxController driver = new CommandXboxController(OI.DRIVER);
 
   private final PowerDistribution pdh = new PowerDistribution();
 
-  // SUBSYSTEMS
+  //subsystems
+  robot.drive.DriveSubsystem drive = new robot.drive.DriveSubsystem();
 
-  // COMMANDS
+  //COMMANDS
+  
 
   /** The robot contains subsystems, OI devices, and commands. */
   public Robot() {
@@ -43,15 +49,17 @@ public class Robot extends CommandRobot implements Logged {
     configureGameBehavior();
     configureBindings();
   }
+//Auto
 
   /** Configures basic behavior for different periods during the game. */
   private void configureGameBehavior() {
+
     // TODO: Add configs for all additional libraries, components, intersubsystem interaction
     // Configure logging with DataLogManager, Monologue, URCL, and FaultLogger
     DataLogManager.start();
     Monologue.setupMonologue(this, "/Robot", false, true);
     addPeriodic(Monologue::updateAll, PERIOD.in(Seconds));
-    addPeriodic(FaultLogger::update, 2);
+    addPeriodic(FaultLogger::update, 1);
 
     SmartDashboard.putData(CommandScheduler.getInstance());
     // Log PDH
@@ -70,7 +78,10 @@ public class Robot extends CommandRobot implements Logged {
   }
 
   /** Configures trigger -> command bindings. */
-  private void configureBindings() {}
+  private void configureBindings() {
+    drive.setDefaultCommand(drive.drive(driver::getLeftY, driver::getRightY));
+    autonomous().whileTrue(drive.drive(() -> 2, () -> 2));
+}
 
   /**
    * Command factory to make both controllers rumble.
@@ -97,4 +108,5 @@ public class Robot extends CommandRobot implements Logged {
   public void close() {
     super.close();
   }
+  
 }
