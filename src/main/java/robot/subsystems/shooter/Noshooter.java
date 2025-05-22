@@ -1,24 +1,13 @@
 package robot.subsystems.shooter;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class Noshooter extends SubsystemBase {
-  public Noshooter() {}
-
+public class Noshooter implements ShooterIO
+{
   @Override
-  public void periodic() {
-    // No functionality here
+  public double getVelocity(){
+  return 0;
   }
 
-  public void shoot() {
-    // Do nothing
-  }
-
-  public void stop() {
-    // do nothing
-  }
-
-  public void setShooterSpeed(double speed) {
-    // do nothing
+  public void setVoltage(){
+    
   }
 }
