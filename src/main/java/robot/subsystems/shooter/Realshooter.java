@@ -4,8 +4,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.units.Voltage;
-
 public class Realshooter implements ShooterIO{
     
  
@@ -23,20 +21,24 @@ public class Realshooter implements ShooterIO{
         rightEncoder =  rightShooterMotor.getEncoder();
         leftShooterMotor.setInverted(true);
 
-
- 
-
-
-
-    }
-    
-    @Override
-    public void setVoltage(double Voltage) {
-        leftShooterMotor.setVoltage(Voltage);
     }
 
+    /*
+     * gets the left encoder's velocity
+     */
     @Override
     public double getVelocity() {
+        return leftEncoder.getVelocity();
+    }
+
+    /*
+     * sets the voltage for both motors
+     */
+    @Override
+    public void setVoltage(double voltage) {
+        rightShooterMotor.setVoltage(voltage);
+        leftShooterMotor.setVoltage(voltage);
+      
     }
 
 	
