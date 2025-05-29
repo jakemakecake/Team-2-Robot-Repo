@@ -51,6 +51,15 @@ public class Robot extends CommandRobot implements Logged {
     configureBindings();
   }
 //Auto
+@Override
+public void autonomousInit() {
+  super.autonomousInit();
+  // Pose2d currentPose = drive.pose();
+  Pose2d goalPose = drive.pose().plus(new Transform2d(3, 0, new Rotation2d(0)));
+  autonomous().whileTrue(drive.drive(() -> .4, () -> .4).until(() -> drive.pose().equals(goalPose)));
+  autonomousExit();
+}
+
 
   /** Configures basic behavior for different periods during the game. */
   private void configureGameBehavior() {
