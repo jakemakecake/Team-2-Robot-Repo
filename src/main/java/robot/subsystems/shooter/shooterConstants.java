@@ -3,7 +3,7 @@ package robot.subsystems.shooter;
 public class shooterConstants {
     private final int LEFT_SHOOTER_MOTOR_ID = 1; //  change later to  CAN ID
     private final int RIGHT_SHOOTER_MOTOR_ID = 2; // change later to  CAN ID
-    public final double Defaultvelocity = 0.7; // 70% (0-1) power, change as needed
+    public final double DEFAULTVELOCITY = 0.7; // 70% (0-1) power, change as needed
     public final double MaxVelocity = 1; 
     
     public static final class PID {
