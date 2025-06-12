@@ -11,7 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+// import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogGyro;
@@ -144,11 +144,11 @@ public class DriveSubsystem extends SubsystemBase implements Logged{
     return odometry.getPoseMeters();
   }
 
-  @Log
-  public Pose2d goalPose() {
-    Pose2d goalPose = pose().plus(new Transform2d(3, 0, new Rotation2d(0)));
-    return goalPose();
-  }
+  // @Log
+  // public Pose2d goalPose() {
+  //   Pose2d goalPose = pose().plus(new Transform2d(3, 0, new Rotation2d(0)));
+  //   return goalPose();
+  // }
 
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(FF.kS, FF.kV);
 
